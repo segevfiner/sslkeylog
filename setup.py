@@ -7,10 +7,11 @@ from setuptools import setup, Extension
 
 
 if sys.platform == 'win32':
-    # TODO: Support 1.0.2
     openssl_base_version = re.search(r"^OpenSSL ([0-9.]+)", ssl.OPENSSL_VERSION).group(1)
     if openssl_base_version == "1.1.0":
         openssl_version = "1.1.0h"
+    elif openssl_base_version == "1.0.2":
+        openssl_version = "1.0.2o"
     else:
         raise RuntimeError("Unsupported OpenSSL version")
 
@@ -18,8 +19,13 @@ if sys.platform == 'win32':
                                'amd64' if sys.maxsize > 2**32 else 'win32')
 
     include_dirs = [os.path.join(openssl_dir, 'include')]
-    library_dirs = [openssl_dir]
-    libraries = ['libssl', 'libcrypto']
+
+    if openssl_base_version not in ['1.0.2']:
+        library_dirs = [openssl_dir]
+        libraries = ['libssl', 'libcrypto']
+    else:
+        library_dirs = []
+        libraries = []
 else:
     include_dirs = []
     library_dirs = []
