@@ -38,6 +38,7 @@ setup(
     author="Segev Finer",
     author_email="segev208@gmail.com",
     zip_safe=False,
+    py_modules=["sslkeylog"],
     ext_modules=[
         Extension(
             "_sslkeylog", ["src/_sslkeylog.c"],
