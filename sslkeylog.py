@@ -30,9 +30,7 @@ class KeyLog(object):
 
     def add(self, sock):
         with self.lock:
-            self.file.write("CLIENT_RANDOM {} {}\n".format(
-                binascii.hexlify(get_client_random(sock)).decode("utf-8"),
-                binascii.hexlify(get_master_key(sock)).decode("utf-8")))
+            self.file.write(get_keylog_line(sock))
             self.file.flush()
 
 
@@ -44,6 +42,11 @@ def get_client_random(sock):
 def get_master_key(sock):
     sock = getattr(sock, '_sslobj', sock)
     return _sslkeylog.get_master_key(sock)
+
+
+def get_keylog_line(sock):
+        binascii.hexlify(get_client_random(sock)).decode("utf-8"),
+        binascii.hexlify(get_master_key(sock)).decode("utf-8"))
 
 
 _keylog_callback = None
