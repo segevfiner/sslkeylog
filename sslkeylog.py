@@ -46,16 +46,21 @@ def get_master_key(sock):
     return _sslkeylog.get_master_key(sock)
 
 
-def set_keylog(ctx, dest):
+_keylog_callback = None
+
+
+def set_keylog(dest):
+    global _keylog_callback
+
     patch()
 
     if callable(dest):
-        ctx._keylog = dest
+        _keylog_callback = dest
     else:
         def _keylog(sock):
             dest.add(sock)
 
-        ctx._keylog = _keylog
+        _keylog_callback = _keylog
 
 
 _patched = False
@@ -66,8 +71,8 @@ _original_do_handshake = None
 def _do_handshake(self, *args, **kwargs):
     _original_do_handshake(self, *args, **kwargs)
 
-    if hasattr(self.context, '_keylog'):
-        self.context._keylog(self)
+    if _keylog_callback is not None:
+        _keylog_callback(self)
 
 
 def patch():
