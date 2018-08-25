@@ -3,35 +3,7 @@ import ssl
 import threading
 import binascii
 from functools import wraps
-import six
 import _sslkeylog
-
-
-class KeyLog(object):
-    def __init__(self, f):
-        if isinstance(f, six.string_types):
-            self._should_close = True
-            self.file = open(f, 'a')
-        else:
-            self._should_close = False
-            self.file = f
-
-        self.lock = threading.Lock()
-
-    def close(self):
-        if self._should_close:
-            self.file.close()
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_value, tb):
-        self.close()
-
-    def add(self, sock):
-        with self.lock:
-            self.file.write(get_keylog_line(sock))
-            self.file.flush()
 
 
 def get_client_random(sock):
@@ -45,11 +17,13 @@ def get_master_key(sock):
 
 
 def get_keylog_line(sock):
+    return "CLIENT_RANDOM {} {}".format(
         binascii.hexlify(get_client_random(sock)).decode("utf-8"),
         binascii.hexlify(get_master_key(sock)).decode("utf-8"))
 
 
 _keylog_callback = None
+_lock = threading.Lock()
 
 
 def set_keylog(dest):
@@ -60,8 +34,10 @@ def set_keylog(dest):
     if callable(dest):
         _keylog_callback = dest
     else:
-        def _keylog(sock):
-            dest.add(sock)
+        def _keylog(sock, line):
+            with _lock:
+                dest.write(line + '\n')
+                dest.flush()
 
         _keylog_callback = _keylog
 
@@ -75,7 +51,7 @@ def _do_handshake(self, *args, **kwargs):
     _original_do_handshake(self, *args, **kwargs)
 
     if _keylog_callback is not None:
-        _keylog_callback(self)
+        _keylog_callback(self, get_keylog_line(self))
 
 
 def patch():

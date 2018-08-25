@@ -46,7 +46,4 @@ setup(
             library_dirs=library_dirs,
             libraries=libraries),
     ],
-    install_requires=[
-        "six",
-    ],
 )
