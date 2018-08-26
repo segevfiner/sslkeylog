@@ -1,9 +1,17 @@
 from __future__ import absolute_import
+import sys
+import atexit
 import ssl
 import threading
 import binascii
 from functools import wraps
 import _sslkeylog
+
+
+if sys.version_info[0] >= 3:
+    string_types = str,
+else:
+    string_types = basestring,  # noqa: F821
 
 
 def get_client_random(sock):
@@ -22,24 +30,43 @@ def get_keylog_line(sock):
         binascii.hexlify(get_master_key(sock)).decode("utf-8"))
 
 
-_keylog_callback = None
 _lock = threading.Lock()
+_keylog_callback = None
+_log_file = None
+
+
+@atexit.register
+def _cleanup():
+    if _log_file is not None:
+        _log_file.close()
 
 
 def set_keylog(dest):
-    global _keylog_callback
+    global _keylog_callback, _log_file
 
     patch()
 
     if callable(dest):
         _keylog_callback = dest
     else:
+        if isinstance(dest, string_types):
+            log_file = open(dest, 'a')
+        else:
+            log_file = dest
+
         def _keylog(sock, line):
             with _lock:
-                dest.write(line + '\n')
-                dest.flush()
+                log_file.write(line + '\n')
+                log_file.flush()
 
         _keylog_callback = _keylog
+
+    if _log_file is not None:
+        _log_file.close()
+        _log_file = None
+
+    if isinstance(dest, string_types):
+        _log_file = log_file
 
 
 _patched = False
