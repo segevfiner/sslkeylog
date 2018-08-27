@@ -16,11 +16,19 @@ else:
 
 def get_client_random(sock):
     sock = getattr(sock, '_sslobj', sock)
+    sock = getattr(sock, '_sslobj', sock)
+    if sock is None:
+        return None
+
     return _sslkeylog.get_client_random(sock)
 
 
 def get_master_key(sock):
     sock = getattr(sock, '_sslobj', sock)
+    sock = getattr(sock, '_sslobj', sock)
+    if sock is None:
+        return None
+
     return _sslkeylog.get_master_key(sock)
 
 
