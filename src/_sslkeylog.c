@@ -74,7 +74,7 @@ static PyObject *sslkeylog_get_client_random(PyObject *m, PyObject *args)
         return NULL;
     }
 
-    SSL_get_client_random(sslsocket->ssl, PyBytes_AS_STRING(result), size);
+    SSL_get_client_random(sslsocket->ssl, (unsigned char *)PyBytes_AS_STRING(result), size);
 
     return result;
 }
@@ -105,7 +105,7 @@ static PyObject *sslkeylog_get_master_key(PyObject *m, PyObject *args)
         return NULL;
     }
 
-    SSL_SESSION_get_master_key(session, PyBytes_AS_STRING(result), size);
+    SSL_SESSION_get_master_key(session, (unsigned char *)PyBytes_AS_STRING(result), size);
 
     return result;
 }
