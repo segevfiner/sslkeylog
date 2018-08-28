@@ -4,3 +4,4 @@
 /*.so
 /build/
 /dist/
+.pytest_cache/
