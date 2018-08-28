@@ -3,6 +3,7 @@ import re
 import threading
 import socket
 import ssl
+from contextlib import closing
 
 import pytest
 from six.moves import socketserver
@@ -24,7 +25,7 @@ def socket_timeout():
 
 class ThreadingSSLServer(socketserver.ThreadingTCPServer):
     def __init__(self, server_address, handler_class, context):
-        super(ThreadingSSLServer, self).__init__(server_address, handler_class)
+        socketserver.ThreadingTCPServer.__init__(self, server_address, handler_class)
         self.context = context
         self.socket = self.context.wrap_socket(self.socket, server_side=True)
 
@@ -63,8 +64,8 @@ def context():
 
 @pytest.fixture
 def ssl_client(context, ssl_server):
-    with socket.create_connection(ADDRESS) as sock:
-        with context.wrap_socket(sock, server_hostname=ADDRESS[0]) as ssock:
+    with closing(socket.create_connection(ADDRESS)) as sock:
+        with closing(context.wrap_socket(sock, server_hostname=ADDRESS[0])) as ssock:
             yield ssock
 
 
