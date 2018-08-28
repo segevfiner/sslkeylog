@@ -15,6 +15,9 @@ else:
 
 
 def get_client_random(sock):
+    if sock is None:
+        raise TypeError("get_client_random() argument must be ssl.SSLSocket, not None")
+
     sock = getattr(sock, '_sslobj', sock)
     sock = getattr(sock, '_sslobj', sock)
     if sock is None:
@@ -24,6 +27,9 @@ def get_client_random(sock):
 
 
 def get_master_key(sock):
+    if sock is None:
+        raise TypeError("get_master_key() argument must be ssl.SSLSocket, not None")
+
     sock = getattr(sock, '_sslobj', sock)
     sock = getattr(sock, '_sslobj', sock)
     if sock is None:
