@@ -84,36 +84,58 @@ def set_keylog(dest):
 
 
 _patched = False
-_original_do_handshake = None
+_orig_sslsocket_do_handshake = None
+_orig_sslobject_do_handshake = None
 
 
 @wraps(ssl.SSLSocket.do_handshake)
-def _do_handshake(self, *args, **kwargs):
-    _original_do_handshake(self, *args, **kwargs)
+def _sslsocket_do_handshake(self, *args, **kwargs):
+    _orig_sslsocket_do_handshake(self, *args, **kwargs)
 
     if _keylog_callback is not None:
         _keylog_callback(self, get_keylog_line(self))
 
 
+if hasattr(ssl, 'SSLObject'):
+    @wraps(ssl.SSLObject.do_handshake)
+    def _sslobject_do_handshake(self, *args, **kwargs):
+        _orig_sslobject_do_handshake(self, *args, **kwargs)
+
+        # No need to log again if this SSLObject is owned by an SSLSocket
+        if isinstance(self._sslobj.owner, ssl.SSLSocket):
+            return
+
+        if _keylog_callback is not None:
+            _keylog_callback(self, get_keylog_line(self))
+
+
 def patch():
-    global _patched, _original_do_handshake
+    global _patched, _orig_sslsocket_do_handshake, _orig_sslobject_do_handshake
 
     if _patched:
         return
 
-    _original_do_handshake = ssl.SSLSocket.do_handshake
-    ssl.SSLSocket.do_handshake = _do_handshake
+    _orig_sslsocket_do_handshake = ssl.SSLSocket.do_handshake
+    ssl.SSLSocket.do_handshake = _sslsocket_do_handshake
+
+    if hasattr(ssl, 'SSLObject'):
+        _orig_sslobject_do_handshake = ssl.SSLObject.do_handshake
+        ssl.SSLObject.do_handshake = _sslobject_do_handshake
 
     _patched = True
 
 
 def unpatch():
-    global _patched, _original_do_handshake
+    global _patched, _orig_sslsocket_do_handshake, _orig_sslobject_do_handshake
 
     if not _patched:
         return
 
-    ssl.SSLSocket.do_handshake = _original_do_handshake
-    _original_do_handshake = None
+    ssl.SSLSocket.do_handshake = _orig_sslsocket_do_handshake
+    _orig_sslsocket_do_handshake = None
+
+    if hasattr(ssl, 'SSLObject'):
+        ssl.SSLObject.do_handshake = _orig_sslobject_do_handshake
+        _orig_sslobject_do_handshake = None
 
     _patched = False

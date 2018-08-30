@@ -154,3 +154,47 @@ def test_set_keylog_callback(tmpdir, context, ssl_server):
     for args, kwargs in keylog_callback.call_args_list:
         assert isinstance(args[0], ssl.SSLSocket)
         assert LOG_LINE_REGEX.search(args[1])
+
+
+def ssl_io_loop(sock, incoming, outgoing, func, *args):
+    while True:
+        errno = None
+        try:
+            ret = func(*args)
+        except ssl.SSLError as e:
+            if e.errno not in (ssl.SSL_ERROR_WANT_READ, ssl.SSL_ERROR_WANT_WRITE):
+                raise
+            errno = e.errno
+
+        buf = outgoing.read()
+        sock.sendall(buf)
+
+        if errno is None:
+            break
+        elif errno == ssl.SSL_ERROR_WANT_READ:
+            buf = sock.recv(4096)
+            if buf:
+                incoming.write(buf)
+            else:
+                incoming.write_eof()
+
+    return ret
+
+
+@pytest.mark.skipif(not hasattr(ssl, 'MemoryBIO'), reason="MemoryBIO unsupported")
+def test_set_keylog_bio(tmpdir, context, ssl_server):
+    keylog = tmpdir / "sslkeylog.txt"
+    sslkeylog.set_keylog(str(keylog))
+
+    with closing(socket.create_connection(ADDRESS)) as sock:
+        incoming = ssl.MemoryBIO()
+        outgoing = ssl.MemoryBIO()
+        sslobj = context.wrap_bio(incoming, outgoing, server_side=False,
+                                  server_hostname=ADDRESS[0])
+
+        ssl_io_loop(sock, incoming, outgoing, sslobj.do_handshake)
+
+    data = keylog.read_text("utf-8").splitlines()
+    assert len(data) == 2
+    for line in data:
+        assert LOG_LINE_REGEX.search(line)
