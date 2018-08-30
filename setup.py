@@ -2,8 +2,12 @@ import sys
 import os
 import re
 import ssl
-
+from io import open
 from setuptools import setup, Extension
+
+
+with open("README.rst", "r", encoding="utf-8") as f:
+    long_description = f.read()
 
 
 if sys.platform == 'win32':
@@ -37,6 +41,8 @@ setup(
     version="0.1.0",
     author="Segev Finer",
     author_email="segev208@gmail.com",
+    description="Log SSL/TLS keys for decrypting SSL/TLS connections",
+    long_description=long_description,
     zip_safe=False,
     py_modules=["sslkeylog"],
     ext_modules=[
