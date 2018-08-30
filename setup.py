@@ -47,7 +47,7 @@ setup(
     py_modules=["sslkeylog"],
     ext_modules=[
         Extension(
-            "_sslkeylog", ["src/_sslkeylog.c"],
+            "_sslkeylog", ["_sslkeylog.c"],
             include_dirs=include_dirs,
             library_dirs=library_dirs,
             libraries=libraries),
