@@ -57,6 +57,7 @@ setup(
             "flake8",
             "pytest",
             "mock",
+            "sphinx",
         ],
     },
 )
