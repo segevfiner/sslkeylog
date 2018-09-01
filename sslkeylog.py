@@ -9,6 +9,9 @@ Quickstart::
     sslkeylog.set_keylog("sslkeylog.txt")
 
     # Do anything involving SSL (Using the built-in ssl module)
+
+And set "(Pre)-Master-Secret log filename" in Wireshark's SSL protocol preferences to the resulting
+file.
 """
 
 from __future__ import absolute_import
