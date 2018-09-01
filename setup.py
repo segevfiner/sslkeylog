@@ -6,6 +6,9 @@ from io import open
 from setuptools import setup, Extension
 
 
+with open("sslkeylog.py", "r", encoding="utf-8") as f:
+    version = re.search(r'(?m)^__version__ = u"([a-zA-Z0-9.-]+)"', f.read()).group(1)
+
 with open("README.rst", "r", encoding="utf-8") as f:
     long_description = f.read()
 
@@ -38,7 +41,7 @@ else:
 
 setup(
     name="sslkeylog",
-    version="0.1.0",
+    version=version,
     author="Segev Finer",
     author_email="segev208@gmail.com",
     description="Log SSL/TLS keys for decrypting SSL/TLS connections",

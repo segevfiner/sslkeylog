@@ -24,6 +24,9 @@ from functools import wraps
 import _sslkeylog
 
 
+__version__ = u"0.1.0"
+
+
 if sys.version_info[0] >= 3:
     string_types = str,
 else:
