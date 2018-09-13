@@ -13,7 +13,7 @@ with open("README.rst", "r", encoding="utf-8") as f:
     long_description = f.read()
 
 
-if sys.platform == 'win32':
+if sys.platform == "win32":
     openssl_base_version = re.search(r"^OpenSSL ([0-9.]+)", ssl.OPENSSL_VERSION).group(1)
     if openssl_base_version == "1.1.0":
         openssl_version = "1.1.0h"
@@ -22,21 +22,21 @@ if sys.platform == 'win32':
     else:
         raise RuntimeError("Unsupported OpenSSL version")
 
-    openssl_dir = os.path.join('openssl', openssl_version,
-                               'amd64' if sys.maxsize > 2**32 else 'win32')
+    openssl_dir = os.path.join("openssl", openssl_version,
+                               "amd64" if sys.maxsize > 2**32 else "win32")
 
-    include_dirs = [os.path.join(openssl_dir, 'include')]
+    include_dirs = [os.path.join(openssl_dir, "include")]
 
-    if openssl_base_version not in ['1.0.2']:
+    if openssl_base_version not in ["1.0.2"]:
         library_dirs = [openssl_dir]
-        libraries = ['libssl', 'libcrypto']
+        libraries = ["libssl", "libcrypto"]
     else:
         library_dirs = []
         libraries = []
 else:
     include_dirs = []
     library_dirs = []
-    libraries = ['ssl', 'crypto']
+    libraries = ["ssl", "crypto"]
 
 
 setup(
