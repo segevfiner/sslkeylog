@@ -47,11 +47,13 @@ setup(
     description="Log SSL/TLS keys for decrypting SSL/TLS connections",
     long_description=long_description,
     long_description_content_type="text/x-rst",
+    license="MIT",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "Topic :: Security :: Cryptography",
         "Topic :: System :: Networking :: Monitoring",
+        "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 2",
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",

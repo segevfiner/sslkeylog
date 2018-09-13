@@ -29,5 +29,9 @@ Links
 .. _NSS Key Log Format: https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/Key_Log_Format
 .. _Wireshark - SSL: https://wiki.wireshark.org/SSL
 
+License
+-------
+MIT License, except OpenSSL which is licensed under it's own license. See LICENSE.txt
+
 This product includes software developed by the OpenSSL Project
 for use in the OpenSSL Toolkit (http://www.openssl.org/)
