@@ -27,10 +27,12 @@ typedef struct {
 
 /* Compatibility for OpenSSL<1.1.0 (Copied from OpenSSL) */
 #if OPENSSL_VERSION_NUMBER < 0x10100000L
+#ifdef _WIN32
 static SSL_SESSION *SSL_get_session(const SSL *ssl)
 {
     return ssl->session;
 }
+#endif
 
 static size_t SSL_get_client_random(const SSL *ssl, unsigned char *out, size_t outlen)
 {
