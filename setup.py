@@ -66,7 +66,7 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
     ],
-    keywords="SSL TLS SSLKEYLOGFILE",
+    keywords="ssl tls sslkeylogfile",
     zip_safe=False,
     py_modules=["sslkeylog"],
     ext_modules=[
