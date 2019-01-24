@@ -48,6 +48,10 @@ setup(
     long_description=long_description,
     long_description_content_type="text/x-rst",
     url="https://github.com/segevfiner/sslkeylog",
+    project_urls={
+        "Documentation": "https://sslkeylog.readthedocs.io/",
+        "Issue Tracker": "https://github.com/segevfiner/sslkeylog/issues",
+    },
     license="MIT",
     classifiers=[
         "Development Status :: 4 - Beta",
