@@ -2,7 +2,7 @@ sslkeylog
 =========
 
 .. image:: https://img.shields.io/pypi/v/sslkeylog.svg
-   :target: https://pypi.org/project/ssslkeylog/
+   :target: https://pypi.org/project/sslkeylog/
    :alt: PyPI
 
 .. image:: https://readthedocs.org/projects/sslkeylog/badge/?version=latest
