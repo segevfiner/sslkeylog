@@ -1,6 +1,14 @@
 sslkeylog
 =========
 
+.. image:: https://img.shields.io/pypi/v/sslkeylog.svg
+   :target: https://pypi.org/project/ssslkeylog/
+   :alt: PyPI
+
+.. image:: https://readthedocs.org/projects/sslkeylog/badge/?version=latest
+   :target: https://sslkeylog.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
+
 This is an implementation of the ``SSLKEYLOGFILE`` facility, available in Firefox and
 Chromium/Google Chrome, that is supported by Wireshark in order to decrypt SSL/TLS connections
 even when you don't have the private key, or when using key exchange methods that will prevent
