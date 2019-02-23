@@ -1,4 +1,6 @@
+import sys
 import os
+import time
 import re
 import threading
 import socket
@@ -27,6 +29,9 @@ def socket_timeout():
 
 
 class ThreadingSSLServer(socketserver.ThreadingTCPServer):
+    if sys.platform != 'win32':
+        allow_reuse_address = True
+
     def __init__(self, server_address, handler_class, context):
         socketserver.ThreadingTCPServer.__init__(self, server_address, handler_class)
         self.context = context
@@ -193,6 +198,8 @@ def test_set_keylog_bio(tmpdir, context, ssl_server):
                                   server_hostname=ADDRESS[0])
 
         ssl_io_loop(sock, incoming, outgoing, sslobj.do_handshake)
+
+    time.sleep(2)
 
     data = keylog.read_text("utf-8").splitlines()
     assert len(data) == 2
