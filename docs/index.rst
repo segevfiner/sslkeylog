@@ -1,6 +1,12 @@
 Welcome to sslkeylog's documentation!
 =====================================
 
+.. toctree::
+   :hidden:
+   :maxdepth: 2
+
+   changelog
+
 This is an implementation of the ``SSLKEYLOGFILE`` facility, available in Firefox and
 Chromium/Google Chrome, that is supported by Wireshark in order to decrypt SSL/TLS connections
 even when you don't have the private key, or when using key exchange methods that will prevent
