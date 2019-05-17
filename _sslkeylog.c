@@ -1,7 +1,16 @@
 #include <Python.h>
 #include <openssl/ssl.h>
 
+static PyObject *sslcontext_type;
 static PyObject *sslsocket_type;
+
+static int sslkeylog_ex_data_index = -1;
+
+typedef struct {
+    PyObject_HEAD
+    SSL_CTX *ctx;
+    /* ... */
+} PySSLContext;
 
 /* This is an hack to get access to the private SSL* of the Python socket object */
 #if PY_MAJOR_VERSION >= 3
@@ -112,11 +121,84 @@ static PyObject *sslkeylog_get_master_key(PyObject *m, PyObject *args)
     return result;
 }
 
+#ifdef OPENSSL_VERSION_NUMBER >= 0x10101000L
+typedef struct {
+    PyObject *mod;
+} sslkeylog_ex_data;
+
+static void sslkeylog_ex_data_new(void *parent, void *ptr, CRYPTO_EX_DATA *ad,
+                                  int idx, long argl, void *argp)
+{
+    sslkeylog_ex_data *ex_data = malloc(sizeof(sslkeylog_ex_data));
+    if (!ex_data) {
+        return;
+    }
+    memset(ex_data, 0, sizeof(*ex_data));
+
+    SSL_CTX_set_ex_data(parent, idx, ex_data);
+}
+
+static void sslkeylog_ex_data_free(void *parent, void *ptr, CRYPTO_EX_DATA *ad,
+                                   int idx, long argl, void *argp)
+{
+    free(ptr);
+}
+
+static int sslkeylog_ex_data_dup(CRYPTO_EX_DATA *to, const CRYPTO_EX_DATA *from,
+                                 void *from_d, int idx, long argl, void *argp)
+{
+    return 0;
+}
+
+static void keylog_callback(const SSL *ssl, const char *line)
+{
+    PyGILState_STATE gstate = PyGILState_Ensure();
+
+    sslkeylog_ex_data *ex_data = SSL_CTX_get_ex_data(SSL_get_SSL_CTX(ssl), sslkeylog_ex_data_index);
+
+    PyObject *keylog_callback = PyObject_GetAttrString(ex_data->mod, "_keylog_callback");
+    if (!keylog_callback) {
+        PyErr_Clear();
+        goto out;
+    }
+
+    PyObject *result = PyObject_CallFunction(keylog_callback, "Os", Py_None, line);
+    Py_DECREF(keylog_callback);
+    if (!result) {
+        PyErr_PrintEx(0);
+    }
+    Py_DECREF(result);
+
+out:
+    PyGILState_Release(gstate);
+}
+
+static PyObject *sslkeylog_set_keylog_callback(PyObject *m, PyObject *args)
+{
+    PySSLContext *sslcontext;
+
+    if (!PyArg_ParseTuple(args, "O!:set_keylog_callback", sslcontext_type, &sslcontext)) {
+        return NULL;
+    }
+
+    sslkeylog_ex_data *ex_data = SSL_CTX_get_ex_data(sslcontext->ctx, sslkeylog_ex_data_index);
+    ex_data->mod = m;
+
+    SSL_CTX_set_keylog_callback(sslcontext->ctx, keylog_callback);
+
+    Py_RETURN_NONE;
+}
+#endif
+
 static PyMethodDef sslkeylogmethods[] = {
     {"get_client_random", sslkeylog_get_client_random, METH_VARARGS,
      NULL},
     {"get_master_key", sslkeylog_get_master_key, METH_VARARGS,
      NULL},
+#ifdef OPENSSL_VERSION_NUMBER >= 0x10101000L
+    {"set_keylog_callback", sslkeylog_set_keylog_callback, METH_VARARGS,
+     NULL},
+#endif
     {NULL, NULL, 0, NULL}
 };
 
@@ -151,6 +233,13 @@ PyMODINIT_FUNC init_sslkeylog(void)
         goto out;
     }
 
+    sslcontext_type = PyObject_GetAttrString(_ssl, "_SSLContext");
+    if (!sslcontext_type) {
+        Py_DECREF(_ssl);
+        Py_CLEAR(m);
+        goto out;
+    }
+
     sslsocket_type = PyObject_GetAttrString(_ssl, "_SSLSocket");
     if (!sslsocket_type) {
         Py_DECREF(_ssl);
@@ -159,6 +248,19 @@ PyMODINIT_FUNC init_sslkeylog(void)
     }
 
     Py_DECREF(_ssl);
+
+    if (sslkeylog_ex_data_index == -1) {
+        sslkeylog_ex_data_index = SSL_CTX_get_ex_new_index(
+            0,
+            NULL,
+            sslkeylog_ex_data_new,
+            sslkeylog_ex_data_free,
+            sslkeylog_ex_data_dup);
+        if (sslkeylog_ex_data_index == -1) {
+            Py_CLEAR(m);
+            goto out;
+        }
+    }
 
 out:
 #if PY_MAJOR_VERSION >= 3
