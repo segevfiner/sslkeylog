@@ -166,7 +166,7 @@ def patch():
 
     if OPENSSL111:
         _orig_sslcontext__new__ = ssl.SSLContext.__new__
-        ssl.SSLContext.__new__ = _sslcontext__new__
+        ssl.SSLContext.__new__ = staticmethod(_sslcontext__new__)
     else:
         _orig_sslsocket_do_handshake = ssl.SSLSocket.do_handshake
         ssl.SSLSocket.do_handshake = _sslsocket_do_handshake

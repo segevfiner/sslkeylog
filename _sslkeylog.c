@@ -21,6 +21,8 @@ typedef struct {
     /* ... */
 } PySSLSocket;
 #elif PY_VERSION_HEX >= 0x02070900
+static PyObject *sslkeylog_mod;
+
 typedef struct PySocketSockObject PySocketSockObject;
 
 typedef struct {
@@ -182,7 +184,11 @@ static PyObject *sslkeylog_set_keylog_callback(PyObject *m, PyObject *args)
     }
 
     sslkeylog_ex_data *ex_data = SSL_CTX_get_ex_data(sslcontext->ctx, sslkeylog_ex_data_index);
+#if PY_MAJOR_VERSION >= 3
     ex_data->mod = m;
+#else
+    ex_data->mod = sslkeylog_mod;
+#endif
 
     SSL_CTX_set_keylog_callback(sslcontext->ctx, keylog_callback);
 
@@ -222,6 +228,7 @@ PyMODINIT_FUNC init_sslkeylog(void)
     m = PyModule_Create(&sslkeylogmodule);
 #else
     m = Py_InitModule("_sslkeylog", sslkeylogmethods);
+    sslkeylog_mod = m;
 #endif
     if (!m) {
         goto out;
