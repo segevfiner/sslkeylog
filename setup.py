@@ -15,7 +15,9 @@ with open("README.rst", "r", encoding="utf-8") as f:
 
 if sys.platform == "win32":
     openssl_base_version = re.search(r"^OpenSSL ([0-9.]+)", ssl.OPENSSL_VERSION).group(1)
-    if openssl_base_version == "1.1.0":
+    if openssl_base_version == "1.1.1":
+        openssl_version = "1.1.1c"
+    elif openssl_base_version == "1.1.0":
         openssl_version = "1.1.0h"
     elif openssl_base_version == "1.0.2":
         openssl_version = "1.0.2o"
