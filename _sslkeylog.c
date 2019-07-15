@@ -4,7 +4,9 @@
 static PyObject *sslcontext_type;
 static PyObject *sslsocket_type;
 
+#if OPENSSL_VERSION_NUMBER >= 0x10101000L
 static int sslkeylog_ex_data_index = -1;
+#endif
 
 typedef struct {
     PyObject_HEAD
