@@ -176,7 +176,7 @@ static void keylog_callback(const SSL *ssl, const char *line)
     if (!result) {
         PyErr_PrintEx(0);
     }
-    Py_DECREF(result);
+    Py_XDECREF(result);
 
 out:
     PyGILState_Release(gstate);
