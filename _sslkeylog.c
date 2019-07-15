@@ -142,16 +142,16 @@ static void sslkeylog_ex_data_new(void *parent, void *ptr, CRYPTO_EX_DATA *ad,
     SSL_CTX_set_ex_data(parent, idx, ex_data);
 }
 
-static void sslkeylog_ex_data_free(void *parent, void *ptr, CRYPTO_EX_DATA *ad,
-                                   int idx, long argl, void *argp)
-{
-    free(ptr);
-}
-
 static int sslkeylog_ex_data_dup(CRYPTO_EX_DATA *to, const CRYPTO_EX_DATA *from,
                                  void *from_d, int idx, long argl, void *argp)
 {
     return 0;
+}
+
+static void sslkeylog_ex_data_free(void *parent, void *ptr, CRYPTO_EX_DATA *ad,
+                                   int idx, long argl, void *argp)
+{
+    free(ptr);
 }
 
 static void keylog_callback(const SSL *ssl, const char *line)
@@ -269,8 +269,8 @@ PyMODINIT_FUNC init_sslkeylog(void)
             0,
             NULL,
             sslkeylog_ex_data_new,
-            sslkeylog_ex_data_free,
-            sslkeylog_ex_data_dup);
+            sslkeylog_ex_data_dup,
+            sslkeylog_ex_data_free);
         if (sslkeylog_ex_data_index == -1) {
             Py_CLEAR(m);
             goto out;
