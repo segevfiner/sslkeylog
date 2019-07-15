@@ -60,7 +60,7 @@ static size_t SSL_SESSION_get_master_key(const SSL_SESSION *session,
 {
     if (outlen == 0)
         return session->master_key_length;
-    if (outlen > session->master_key_length)
+    if (outlen > (size_t)session->master_key_length)
         outlen = session->master_key_length;
     memcpy(out, session->master_key, outlen);
     return outlen;
