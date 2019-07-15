@@ -99,7 +99,7 @@ def set_keylog(dest):
 
     patch()
 
-    if callable(dest):
+    if dest is None or callable(dest):
         _sslkeylog._keylog_callback = dest
     else:
         if isinstance(dest, string_types):

@@ -7,6 +7,7 @@ v0.2.0 (Unreleased)
 Added
 ^^^^^
 * Support for OpenSSL 1.1.1 and TLS 1.3
+* Support setting keylog to ``None`` to disable.
 
 Fixed
 ^^^^^

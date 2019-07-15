@@ -138,6 +138,37 @@ def test_set_keylog(tmpdir, context, ssl_server):
             assert LOG_LINE_REGEX.search(line)
 
 
+def test_set_keylog_unset(tmpdir, context, ssl_server):
+    keylog = tmpdir / "sslkeylog.txt"
+    sslkeylog.set_keylog(str(keylog))
+
+    with closing(ssl_connect(context)) as s:
+        s.sendall(b"hello")
+        assert s.recv(1024) == b"hello"
+
+    data = keylog.read_text("utf-8").splitlines()
+    if sslkeylog.OPENSSL111:
+        assert len(data) == 10
+    else:
+        assert len(data) == 2
+        for line in data:
+            assert LOG_LINE_REGEX.search(line)
+
+    sslkeylog.set_keylog(None)
+
+    with closing(ssl_connect(context)) as s:
+        s.sendall(b"hello")
+        assert s.recv(1024) == b"hello"
+
+    data = keylog.read_text("utf-8").splitlines()
+    if sslkeylog.OPENSSL111:
+        assert len(data) == 10
+    else:
+        assert len(data) == 2
+        for line in data:
+            assert LOG_LINE_REGEX.search(line)
+
+
 def test_set_keylog_file(tmpdir, context, ssl_server):
     keylog = tmpdir / "sslkeylog.txt"
 
