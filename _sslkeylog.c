@@ -123,7 +123,7 @@ static PyObject *sslkeylog_get_master_key(PyObject *m, PyObject *args)
     return result;
 }
 
-#ifdef OPENSSL_VERSION_NUMBER >= 0x10101000L
+#if OPENSSL_VERSION_NUMBER >= 0x10101000L
 typedef struct {
     PyObject *mod;
 } sslkeylog_ex_data;
@@ -201,7 +201,7 @@ static PyMethodDef sslkeylogmethods[] = {
      NULL},
     {"get_master_key", sslkeylog_get_master_key, METH_VARARGS,
      NULL},
-#ifdef OPENSSL_VERSION_NUMBER >= 0x10101000L
+#if OPENSSL_VERSION_NUMBER >= 0x10101000L
     {"set_keylog_callback", sslkeylog_set_keylog_callback, METH_VARARGS,
      NULL},
 #endif
