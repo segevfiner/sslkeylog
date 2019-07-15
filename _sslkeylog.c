@@ -256,6 +256,7 @@ PyMODINIT_FUNC init_sslkeylog(void)
 
     Py_DECREF(_ssl);
 
+#if OPENSSL_VERSION_NUMBER >= 0x10101000L
     if (sslkeylog_ex_data_index == -1) {
         sslkeylog_ex_data_index = SSL_CTX_get_ex_new_index(
             0,
@@ -268,6 +269,7 @@ PyMODINIT_FUNC init_sslkeylog(void)
             goto out;
         }
     }
+#endif
 
 out:
 #if PY_MAJOR_VERSION >= 3
