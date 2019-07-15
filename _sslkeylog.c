@@ -166,6 +166,11 @@ static void keylog_callback(const SSL *ssl, const char *line)
         goto out;
     }
 
+    if (keylog_callback == Py_None) {
+        Py_DECREF(keylog_callback);
+        goto out;
+    }
+
     PyObject *result = PyObject_CallFunction(keylog_callback, "Os", Py_None, line);
     Py_DECREF(keylog_callback);
     if (!result) {
@@ -272,6 +277,9 @@ PyMODINIT_FUNC init_sslkeylog(void)
         }
     }
 #endif
+
+    Py_INCREF(Py_None);
+    PyModule_AddObject(m, "_keylog_callback", Py_None);
 
 out:
 #if PY_MAJOR_VERSION >= 3
