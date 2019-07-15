@@ -65,8 +65,15 @@ def ssl_server():
     server.server_close()
 
 
+@pytest.fixture(scope="session")
+def patch():
+    sslkeylog.patch()
+    yield
+    sslkeylog.unpatch()
+
+
 @pytest.fixture
-def context():
+def context(patch):
     return ssl.create_default_context(cafile=CERTFILE)
 
 
@@ -123,9 +130,12 @@ def test_set_keylog(tmpdir, context, ssl_server):
         assert s.recv(1024) == b"hello"
 
     data = keylog.read_text("utf-8").splitlines()
-    assert len(data) == 2
-    for line in data:
-        assert LOG_LINE_REGEX.search(line)
+    if sslkeylog.OPENSSL111:
+        assert len(data) == 10
+    else:
+        assert len(data) == 2
+        for line in data:
+            assert LOG_LINE_REGEX.search(line)
 
 
 def test_set_keylog_file(tmpdir, context, ssl_server):
@@ -139,9 +149,12 @@ def test_set_keylog_file(tmpdir, context, ssl_server):
             assert s.recv(1024) == b"hello"
 
         data = keylog.read_text("utf-8").splitlines()
-        assert len(data) == 2
-        for line in data:
-            assert LOG_LINE_REGEX.search(line)
+        if sslkeylog.OPENSSL111:
+            assert len(data) == 10
+        else:
+            assert len(data) == 2
+            for line in data:
+                assert LOG_LINE_REGEX.search(line)
 
         sslkeylog.set_keylog(None)
         assert not f.closed
@@ -155,10 +168,13 @@ def test_set_keylog_callback(tmpdir, context, ssl_server):
         s.sendall(b"hello")
         assert s.recv(1024) == b"hello"
 
-    assert len(keylog_callback.call_args_list) == 2
-    for args, kwargs in keylog_callback.call_args_list:
-        assert isinstance(args[0], ssl.SSLSocket)
-        assert LOG_LINE_REGEX.search(args[1])
+    if sslkeylog.OPENSSL111:
+        assert len(keylog_callback.call_args_list) == 10
+    else:
+        assert len(keylog_callback.call_args_list) == 2
+        for args, kwargs in keylog_callback.call_args_list:
+            assert isinstance(args[0], ssl.SSLSocket)
+            assert LOG_LINE_REGEX.search(args[1])
 
 
 def ssl_io_loop(sock, incoming, outgoing, func, *args):
@@ -202,6 +218,9 @@ def test_set_keylog_bio(tmpdir, context, ssl_server):
     time.sleep(2)
 
     data = keylog.read_text("utf-8").splitlines()
-    assert len(data) == 2
-    for line in data:
-        assert LOG_LINE_REGEX.search(line)
+    if sslkeylog.OPENSSL111:
+        assert len(data) == 10
+    else:
+        assert len(data) == 2
+        for line in data:
+            assert LOG_LINE_REGEX.search(line)
