@@ -26,7 +26,7 @@ Quick Start
 
     # Do anything involving SSL (Using the built-in ssl module)
 
-Set the :envvar:`SSLKEYLOGFILE` environment variable if you use it, and set "(Pre)-Master-Secret log
+Set the ``SSLKEYLOGFILE`` environment variable if you use it, and set "(Pre)-Master-Secret log
 filename" in Wireshark's SSL protocol preferences to the resulting file.
 
 Links
