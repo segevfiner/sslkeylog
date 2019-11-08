@@ -4,6 +4,7 @@ SSL/TLS connections.
 
 Quickstart::
 
+    import os
     import sslkeylog
 
     sslkeylog.set_keylog(os.environ.get('SSLKEYLOGFILE'))  # Or directly specify a path
