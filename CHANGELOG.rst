@@ -15,7 +15,7 @@ Fixed
 
 v0.1.1 (2019-01-24)
 -------------------
-Fix a broken URL in README.md.
+Fix a broken URL in README.rst.
 
 v0.1.0 (2019-01-24)
 -------------------
