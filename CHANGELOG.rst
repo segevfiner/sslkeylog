@@ -1,6 +1,14 @@
 Changelog
 =========
 
+Unreleased
+----------
+
+Changed
+^^^^^^^
+* ``set_keylog(None)`` will no longer trigger monkey patching.
+* Updated documentation to show how to support :envvar:`SSLKEYLOGFILE`.
+
 v0.2.0 (2019-07-16)
 -------------------
 
