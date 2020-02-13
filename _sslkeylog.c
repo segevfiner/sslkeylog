@@ -1,3 +1,5 @@
+#define PY_SSIZE_T_CLEAN
+
 #include <Python.h>
 #include <openssl/ssl.h>
 
@@ -69,13 +71,15 @@ static size_t SSL_SESSION_get_master_key(const SSL_SESSION *session,
 }
 #endif
 
+#if OPENSSL_VERSION_NUMBER >= 0x10101000L
+
 static PyObject *sslkeylog_export_keying_material(PyObject *m, PyObject *args)
 {
     
     PySSLSocket *sslsocket;
     const char *prf_label;
     size_t out_size;
-    size_t prf_label_len;
+    Py_ssize_t prf_label_len;
     size_t size;
     PyObject *result;
 
@@ -93,12 +97,12 @@ static PyObject *sslkeylog_export_keying_material(PyObject *m, PyObject *args)
     }
     // ssl, out, sizeof(out), prf_label, prf_label_len, NULL, 0, 0
 
-    SSL_export_keying_material(sslsocket->ssl, (unsigned char *)PyBytes_AS_STRING(result), out_size, prf_label, prf_label_len, NULL, 0, 0 );
+    SSL_export_keying_material(sslsocket->ssl, (unsigned char *)PyBytes_AS_STRING(result), out_size, prf_label, (size_t)prf_label_len, NULL, 0, 0 );
 
     return result;
 }
 
-
+#endif
 
 static PyObject *sslkeylog_get_client_random(PyObject *m, PyObject *args)
 {
@@ -237,14 +241,14 @@ static PyObject *sslkeylog_set_keylog_callback(PyObject *m, PyObject *args)
 #endif
 
 static PyMethodDef sslkeylogmethods[] = {
-    { "export_keying_material", sslkeylog_export_keying_material, METH_VARARGS,
-     NULL},
     {"get_client_random", sslkeylog_get_client_random, METH_VARARGS,
      NULL},
     {"get_master_key", sslkeylog_get_master_key, METH_VARARGS,
      NULL},
 #if OPENSSL_VERSION_NUMBER >= 0x10101000L
     {"set_keylog_callback", sslkeylog_set_keylog_callback, METH_VARARGS,
+     NULL},
+    { "export_keying_material", sslkeylog_export_keying_material, METH_VARARGS,
      NULL},
 #endif
     {NULL, NULL, 0, NULL}
