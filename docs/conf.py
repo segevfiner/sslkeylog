@@ -88,6 +88,10 @@ html_theme_options = {
     'github_user': 'segevfiner',
     'github_repo': 'sslkeylog',
     'github_type': 'star',
+    'extra_nav_links': {
+        'sslkeylog @ PyPI': 'https://pypi.org/project/sslkeylog/',
+        'sslkeylog @ GitHub': 'https://github.com/segevfiner/sslkeylog',
+    }
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
