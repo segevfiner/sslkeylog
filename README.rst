@@ -16,6 +16,15 @@ decryption even if you do (Such as Diffie-Hellman).
 
 This is for the standard library ``ssl`` module, it won't work for other ssl modules.
 
+**Note:**
+   Python 3.8+ includes builtin support for generating an SSL key log file via
+   ``ssl.SSLContext.keylog_filename``, and will also enable it when the ``SSLKEYLOGFILE``
+   environment variable is set when creating a context via ``ssl.create_default_context``.
+
+   This package uses the same callback the builtin implementation is using, which will likely cause
+   both implementations to trample each other, causing the other not to work, or other unintended
+   consequences. As such, you should probably not enable both at the same time.
+
 Quick Start
 -----------
 .. code-block:: python
