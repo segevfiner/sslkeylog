@@ -6,7 +6,8 @@ Unreleased
 
 Changed
 ^^^^^^^
-* ``set_keylog(None)`` will no longer trigger monkey patching.
+* ``set_keylog(None)`` will no longer trigger monkey patching, making it easier to use it
+  conditionally.
 * Updated documentation to show how to support ``SSLKEYLOGFILE``.
 
 v0.2.0 (2019-07-16)
