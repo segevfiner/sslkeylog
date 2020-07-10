@@ -89,8 +89,19 @@ def ssl_client(context, ssl_server):
             yield ssock
 
 
-def test_get_client_random(ssl_client):
-    assert sslkeylog.get_client_random(ssl_client)
+@pytest.fixture
+def ssl_client12(ssl_server):
+    context = ssl.create_default_context(cafile=CERTFILE)
+    if hasattr(context, 'maximum_version'):
+        context.maximum_version = ssl.TLSVersion.TLSv1_2
+
+    with closing(socket.create_connection(ADDRESS)) as sock:
+        with closing(context.wrap_socket(sock, server_hostname=ADDRESS[0])) as ssock:
+            yield ssock
+
+
+def test_get_client_random(ssl_client12):
+    assert sslkeylog.get_client_random(ssl_client12)
 
 
 def test_get_client_random_none():
@@ -103,8 +114,8 @@ def test_get_client_random_not_a_socket():
         sslkeylog.get_client_random(object())
 
 
-def test_get_master_key(ssl_client):
-    assert sslkeylog.get_master_key(ssl_client)
+def test_get_master_key(ssl_client12):
+    assert sslkeylog.get_master_key(ssl_client12)
 
 
 def test_get_master_key_none():
@@ -117,8 +128,8 @@ def test_get_master_key_not_a_socket():
         sslkeylog.get_master_key(object())
 
 
-def test_get_keylog_line(ssl_client):
-    assert LOG_LINE_REGEX.search(sslkeylog.get_keylog_line(ssl_client))
+def test_get_keylog_line(ssl_client12):
+    assert LOG_LINE_REGEX.search(sslkeylog.get_keylog_line(ssl_client12))
 
 
 def test_set_keylog(tmpdir, context, ssl_server):
