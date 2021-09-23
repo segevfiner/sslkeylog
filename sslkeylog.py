@@ -25,7 +25,7 @@ from functools import wraps
 import _sslkeylog
 
 
-__version__ = u"0.2.0"
+__version__ = u"0.3.0"
 
 
 if sys.version_info[0] >= 3:
@@ -69,7 +69,11 @@ def get_server_random(sock):
 
 
 def get_client_random(sock):
-    """Get the client random from an :class:`ssl.SSLSocket` or :class:`ssl.SSLObject`."""
+    """
+    Get the client random from an :class:`ssl.SSLSocket` or :class:`ssl.SSLObject`.
+
+    .. note:: Does not work with TLS v1.3+ sockets.
+    """
     if sock is None:
         raise TypeError(
             "get_client_random() argument must be ssl.SSLSocket or ssl.SSLObject, not None")
@@ -84,7 +88,11 @@ def get_client_random(sock):
 
 
 def get_master_key(sock):
-    """Get the master key from an :class:`ssl.SSLSocket` or :class:`ssl.SSLObject`."""
+    """
+    Get the master key from an :class:`ssl.SSLSocket` or :class:`ssl.SSLObject`.
+
+    .. note:: Does not work with TLS v1.3+ sockets.
+    """
     if sock is None:
         raise TypeError(
             "get_master_key() argument must be ssl.SSLSocket or ssl.SSLObject, not None")
@@ -99,7 +107,11 @@ def get_master_key(sock):
 
 
 def get_keylog_line(sock):
-    """Generate a key log line from an :class:`ssl.SSLSocket` or :class:`ssl.SSLObject`."""
+    """
+    Generate a key log line from an :class:`ssl.SSLSocket` or :class:`ssl.SSLObject`.
+
+    .. note:: Does not work with TLS v1.3+ sockets.
+    """
     return "CLIENT_RANDOM {} {}".format(
         binascii.hexlify(get_client_random(sock)).decode("utf-8"),
         binascii.hexlify(get_master_key(sock)).decode("utf-8"))
