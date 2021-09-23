@@ -59,6 +59,19 @@ static size_t SSL_get_client_random(const SSL *ssl, unsigned char *out, size_t o
     return outlen;
 }
 
+
+static size_t SSL_get_server_random(const SSL *ssl, unsigned char *out, size_t outlen)
+{
+    if (outlen == 0)
+        return sizeof(ssl->s3->server_random);
+    if (outlen > sizeof(ssl->s3->server_random))
+        outlen = sizeof(ssl->s3->server_random);
+    memcpy(out, ssl->s3->server_random, outlen);
+    return outlen;
+}
+
+
+
 static size_t SSL_SESSION_get_master_key(const SSL_SESSION *session,
                                          unsigned char *out, size_t outlen)
 {
@@ -129,6 +142,30 @@ static PyObject *sslkeylog_get_client_random(PyObject *m, PyObject *args)
     return result;
 }
 
+static PyObject *sslkeylog_get_server_random(PyObject *m, PyObject *args)
+{
+    PySSLSocket *sslsocket;
+    size_t size;
+    PyObject *result;
+
+    if (!PyArg_ParseTuple(args, "O!:get_server_random", sslsocket_type, &sslsocket)) {
+        return NULL;
+    }
+
+    if (!sslsocket->ssl) {
+        Py_RETURN_NONE;
+    }
+
+    size = SSL_get_server_random(sslsocket->ssl, NULL, 0);
+    result = PyBytes_FromStringAndSize(NULL, size);
+    if (!result) {
+        return NULL;
+    }
+
+    SSL_get_server_random(sslsocket->ssl, (unsigned char *)PyBytes_AS_STRING(result), size);
+
+    return result;
+}
 
 
 static PyObject *sslkeylog_get_master_key(PyObject *m, PyObject *args)
@@ -242,6 +279,8 @@ static PyObject *sslkeylog_set_keylog_callback(PyObject *m, PyObject *args)
 
 static PyMethodDef sslkeylogmethods[] = {
     {"get_client_random", sslkeylog_get_client_random, METH_VARARGS,
+     NULL},
+    {"get_server_random", sslkeylog_get_server_random, METH_VARARGS,
      NULL},
     {"get_master_key", sslkeylog_get_master_key, METH_VARARGS,
      NULL},
