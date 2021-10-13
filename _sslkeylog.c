@@ -171,7 +171,7 @@ static PyObject *sslkeylog_export_keying_material(PyObject *m, PyObject *args)
     Py_buffer context = {0};
     PyObject *result = NULL;
 
-    if (!PyArg_ParseTuple(args, "O!ns#|y*:export_keying_material", sslsocket_type, &sslsocket,
+    if (!PyArg_ParseTuple(args, "O!ns#|z*:export_keying_material", sslsocket_type, &sslsocket,
                           &out_length, &label, &label_length, &context)) {
         return NULL;
     }
