@@ -87,7 +87,7 @@ setup(
             "pytest",
             "mock",
             "six",
-            "sphinx==3.*",
+            "sphinx==4.*"
         ],
     },
 )
