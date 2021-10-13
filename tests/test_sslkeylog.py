@@ -116,6 +116,20 @@ def test_get_client_random_not_a_socket():
         sslkeylog.get_client_random(object())
 
 
+def test_get_server_random(ssl_client12):
+    assert sslkeylog.get_server_random(ssl_client12)
+
+
+def test_get_server_random_none():
+    with pytest.raises(TypeError):
+        sslkeylog.get_server_random(None)
+
+
+def test_get_server_random_not_a_socket():
+    with pytest.raises(TypeError):
+        sslkeylog.get_server_random(object())
+
+
 def test_get_master_key(ssl_client12):
     assert sslkeylog.get_master_key(ssl_client12)
 
@@ -128,6 +142,24 @@ def test_get_master_key_none():
 def test_get_master_key_not_a_socket():
     with pytest.raises(TypeError):
         sslkeylog.get_master_key(object())
+
+
+def test_export_keying_material(ssl_client12):
+    assert sslkeylog.export_keying_material(ssl_client12, 32, "EXPERIMENTAL-test")
+
+
+def test_export_keying_material_with_context(ssl_client12):
+    assert sslkeylog.export_keying_material(ssl_client12, 32, "EXPERIMENTAL-test", b"test")
+
+
+def test_export_keying_material_none():
+    with pytest.raises(TypeError):
+        sslkeylog.export_keying_material(None, 32, "EXPERIMENTAL-test")
+
+
+def test_export_keying_material_not_a_socket():
+    with pytest.raises(TypeError):
+        sslkeylog.export_keying_material(object(), 32, "EXPERIMENTAL-test")
 
 
 def test_get_keylog_line(ssl_client12):
