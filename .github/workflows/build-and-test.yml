@@ -30,6 +30,12 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Install Visual C++ for Python 2.7
+      if: runner.os == 'Windows' && matrix.python-version == '2.7'
+      run: choco install vcpython27 -f -y
+    - name: Set CPPFLAGS for OpenSSL on macOS
+      if: matrix.os == 'macos-latest'
+      run: echo "CPPFLAGS=-I/usr/local/opt/openssl@1.1/include" >> $GITHUB_ENV
     - name: Install dependencies
       run: python -m pip install --upgrade pip setuptools wheel
     - name: Install
