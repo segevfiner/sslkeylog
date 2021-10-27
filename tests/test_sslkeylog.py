@@ -94,6 +94,8 @@ def ssl_client12(ssl_server):
     context = ssl.create_default_context(cafile=CERTFILE)
     if hasattr(context, 'maximum_version'):
         context.maximum_version = ssl.TLSVersion.TLSv1_2
+    else:
+        context.options |= ssl.OP_NO_TLSv1_3
 
     with closing(socket.create_connection(ADDRESS)) as sock:
         with closing(context.wrap_socket(sock, server_hostname=ADDRESS[0])) as ssock:
