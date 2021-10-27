@@ -40,10 +40,20 @@ typedef struct {
 
 /* Compatibility for OpenSSL<1.1.0 (Copied from OpenSSL) */
 #if OPENSSL_VERSION_NUMBER < 0x10100000L
+// On such older Python versions on Windows, OpenSSL was built statically into _ssl.pyd without
+// exporting any of its symbols, so we can't call any OpenSSL function, so we reimplement them here,
+// luckily the ones we need were simple enough
 #ifdef _WIN32
 static SSL_SESSION *SSL_get_session(const SSL *ssl)
 {
     return ssl->session;
+}
+
+// Well, this defeats what this is meant to achieve, comparing the build and runtime version of
+// OpenSSL, but not much we can do...
+static unsigned long SSLeay(void)
+{
+    return (SSLEAY_VERSION_NUMBER);
 }
 #endif
 
@@ -67,6 +77,8 @@ static size_t SSL_SESSION_get_master_key(const SSL_SESSION *session,
     memcpy(out, session->master_key, outlen);
     return outlen;
 }
+
+#define OpenSSL_version_num SSLeay
 #endif
 
 static PyObject *sslkeylog_get_client_random(PyObject *m, PyObject *args)
@@ -229,7 +241,15 @@ PyMODINIT_FUNC PyInit__sslkeylog(void)
 PyMODINIT_FUNC init_sslkeylog(void)
 #endif
 {
-    PyObject *m, *_ssl;
+    PyObject *m = NULL;
+    PyObject *_ssl;
+
+    if (OpenSSL_version_num() & 0xFFFFF000 != OPENSSL_VERSION_NUMBER & 0xFFFFF000) {
+        PyErr_SetString(PyExc_RuntimeError,
+            "OpenSSL version mismatch between build and runtime. "
+            "Please clear your pip cache and rebuild sslkeylog");
+        goto out;
+    }
 
 #if PY_MAJOR_VERSION >= 3
     m = PyModule_Create(&sslkeylogmodule);
