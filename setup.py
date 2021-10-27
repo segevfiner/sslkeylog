@@ -87,7 +87,7 @@ setup(
             "pytest",
             "mock",
             "six",
-            "sphinx==4.*"
+            "sphinx==4.*;python_version>='3.0'"
         ],
     },
 )

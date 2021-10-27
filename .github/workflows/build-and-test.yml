@@ -1,11 +1,11 @@
-name: Build
+name: Build & Test
 
 on:
   push:
     branches:
     - master
   pull_request:
-    branches: 
+    branches:
     - master
 
 jobs:
