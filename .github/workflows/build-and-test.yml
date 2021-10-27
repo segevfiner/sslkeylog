@@ -28,18 +28,17 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install Visual C++ for Python 2.7
-      if: runner.os == 'Windows' && matrix.python-version == '2.7'
-      run: choco install vcpython27 -f -y
     - name: Set CPPFLAGS/LDFLAGS for OpenSSL on macOS
       if: matrix.os == 'macos-latest'
       run: |
         echo "CPPFLAGS=-I/usr/local/opt/openssl@1.1/include" >> $GITHUB_ENV
         echo "LDFLAGS=-L/usr/local/opt/openssl@1.1/lib" >> $GITHUB_ENV
     - name: Install dependencies
-      run: python -m pip install --upgrade pip setuptools wheel
+      run: |
+        python -m pip install --upgrade pip setuptools wheel
     - name: Install
-      run: pip install -e .[dev]
+      run: |
+        pip install -e .[dev]
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
