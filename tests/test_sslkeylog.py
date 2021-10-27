@@ -65,7 +65,7 @@ def ssl_server():
     server.server_close()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def patch():
     sslkeylog.patch()
     yield
@@ -73,7 +73,7 @@ def patch():
 
 
 @pytest.fixture
-def context(patch):
+def context():
     return ssl.create_default_context(cafile=CERTFILE)
 
 
