@@ -1,6 +1,14 @@
 Changelog
 =========
 
+Unreleased
+----------
+
+Added
+^^^^^
+* CI using GitHub Actions. Sadly can't test on Windows Python 2.7 anymore since Microsoft just nuked
+  the compilers for it from existence some time ago.
+
 v0.3.0 (2020-07-10)
 -------------------
 
