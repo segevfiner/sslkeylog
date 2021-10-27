@@ -65,7 +65,7 @@ def ssl_server():
     server.server_close()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def patch():
     sslkeylog.patch()
     yield
@@ -73,7 +73,7 @@ def patch():
 
 
 @pytest.fixture
-def context(patch):
+def context():
     return ssl.create_default_context(cafile=CERTFILE)
 
 
@@ -94,6 +94,8 @@ def ssl_client12(ssl_server):
     context = ssl.create_default_context(cafile=CERTFILE)
     if hasattr(context, 'maximum_version'):
         context.maximum_version = ssl.TLSVersion.TLSv1_2
+    else:
+        context.options |= ssl.OP_NO_TLSv1_3
 
     with closing(socket.create_connection(ADDRESS)) as sock:
         with closing(context.wrap_socket(sock, server_hostname=ADDRESS[0])) as ssock:
