@@ -9,6 +9,9 @@ sslkeylog
    :target: https://sslkeylog.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
 
+.. image:: https://github.com/segevfiner/sslkeylog/actions/workflows/build-and-test.yml/badge.svg
+   :alt: Build & Test Status
+
 This is an implementation of the ``SSLKEYLOGFILE`` facility, available in Firefox and
 Chromium/Google Chrome, that is supported by Wireshark in order to decrypt SSL/TLS connections
 even when you don't have the private key, or when using key exchange methods that will prevent
