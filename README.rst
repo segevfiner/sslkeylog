@@ -10,6 +10,7 @@ sslkeylog
    :alt: Documentation Status
 
 .. image:: https://github.com/segevfiner/sslkeylog/actions/workflows/build-and-test.yml/badge.svg
+   :target: https://github.com/segevfiner/sslkeylog/actions/workflows/build-and-test.yml
    :alt: Build & Test Status
 
 This is an implementation of the ``SSLKEYLOGFILE`` facility, available in Firefox and
