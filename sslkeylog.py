@@ -25,7 +25,7 @@ from functools import wraps
 import _sslkeylog
 
 
-__version__ = u"0.3.0"
+__version__ = u"0.4.0"
 
 
 if sys.version_info[0] >= 3:
@@ -61,6 +61,8 @@ def get_server_random(sock):
     Get the server random from an :class:`ssl.SSLSocket` or :class:`ssl.SSLObject`.
 
     .. note:: Does not work with TLS v1.3+ sockets.
+
+    .. versionadded:: 0.4.0
     """
     if sock is None:
         raise TypeError(
@@ -100,6 +102,8 @@ def export_keying_material(sock, length, label, context=None):
     :class:`ssl.SSLObject`.
 
     .. note:: Does not work with SSL v3.0 or below sockets.
+
+    .. versionadded:: 0.4.0
     """
     if ssl.OPENSSL_VERSION_INFO[:3] < (1, 0, 1):
         raise NotImplementedError("Method not implemented in OpenSSL older than 1.0.1")
