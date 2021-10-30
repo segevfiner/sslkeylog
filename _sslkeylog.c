@@ -71,10 +71,10 @@ static size_t SSL_get_client_random(const SSL *ssl, unsigned char *out, size_t o
 size_t SSL_get_server_random(const SSL *ssl, unsigned char *out, size_t outlen)
 {
     if (outlen == 0)
-        return sizeof(ssl->s3.server_random);
-    if (outlen > sizeof(ssl->s3.server_random))
-        outlen = sizeof(ssl->s3.server_random);
-    memcpy(out, ssl->s3.server_random, outlen);
+        return sizeof(ssl->s3->server_random);
+    if (outlen > sizeof(ssl->s3->server_random))
+        outlen = sizeof(ssl->s3->server_random);
+    memcpy(out, ssl->s3->server_random, outlen);
     return outlen;
 }
 
@@ -328,7 +328,7 @@ PyMODINIT_FUNC init_sslkeylog(void)
     PyObject *m = NULL;
     PyObject *_ssl;
 
-    if (OpenSSL_version_num() & 0xFFFFF000 != OPENSSL_VERSION_NUMBER & 0xFFFFF000) {
+    if ((OpenSSL_version_num() & 0xFFFFF000) != (OPENSSL_VERSION_NUMBER & 0xFFFFF000)) {
         PyErr_SetString(PyExc_RuntimeError,
             "OpenSSL version mismatch between build and runtime. "
             "Please clear your pip cache and rebuild sslkeylog");
