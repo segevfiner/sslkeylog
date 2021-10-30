@@ -1,3 +1,4 @@
+#define PY_SSIZE_T_CLEAN
 #include <Python.h>
 #include <openssl/ssl.h>
 
@@ -57,6 +58,16 @@ static size_t SSL_get_client_random(const SSL *ssl, unsigned char *out, size_t o
     return outlen;
 }
 
+size_t SSL_get_server_random(const SSL *ssl, unsigned char *out, size_t outlen)
+{
+    if (outlen == 0)
+        return sizeof(ssl->s3.server_random);
+    if (outlen > sizeof(ssl->s3.server_random))
+        outlen = sizeof(ssl->s3.server_random);
+    memcpy(out, ssl->s3.server_random, outlen);
+    return outlen;
+}
+
 static size_t SSL_SESSION_get_master_key(const SSL_SESSION *session,
                                          unsigned char *out, size_t outlen)
 {
@@ -94,6 +105,31 @@ static PyObject *sslkeylog_get_client_random(PyObject *m, PyObject *args)
     return result;
 }
 
+static PyObject *sslkeylog_get_server_random(PyObject *m, PyObject *args)
+{
+    PySSLSocket *sslsocket;
+    size_t size;
+    PyObject *result;
+
+    if (!PyArg_ParseTuple(args, "O!:get_server_random", sslsocket_type, &sslsocket)) {
+        return NULL;
+    }
+
+    if (!sslsocket->ssl) {
+        Py_RETURN_NONE;
+    }
+
+    size = SSL_get_server_random(sslsocket->ssl, NULL, 0);
+    result = PyBytes_FromStringAndSize(NULL, size);
+    if (!result) {
+        return NULL;
+    }
+
+    SSL_get_server_random(sslsocket->ssl, (unsigned char *)PyBytes_AS_STRING(result), size);
+
+    return result;
+}
+
 static PyObject *sslkeylog_get_master_key(PyObject *m, PyObject *args)
 {
     PySSLSocket *sslsocket;
@@ -124,6 +160,48 @@ static PyObject *sslkeylog_get_master_key(PyObject *m, PyObject *args)
 
     return result;
 }
+
+#if OPENSSL_VERSION_NUMBER >= 0x10001000L
+static PyObject *sslkeylog_export_keying_material(PyObject *m, PyObject *args)
+{
+    PySSLSocket *sslsocket;
+    Py_ssize_t out_length;
+    const char *label;
+    Py_ssize_t label_length;
+    Py_buffer context = {0};
+    PyObject *result = NULL;
+
+    if (!PyArg_ParseTuple(args, "O!ns#|z*:export_keying_material", sslsocket_type, &sslsocket,
+                          &out_length, &label, &label_length, &context)) {
+        return NULL;
+    }
+
+    if (!sslsocket->ssl) {
+        Py_RETURN_NONE;
+    }
+
+    result = PyBytes_FromStringAndSize(NULL, out_length);
+    if (!result) {
+        goto out;
+    }
+
+    if (SSL_export_keying_material(
+        sslsocket->ssl,
+        (unsigned char *)PyBytes_AS_STRING(result),
+        (size_t)out_length,
+        label, (size_t)label_length,
+        context.buf, context.len, context.buf != NULL) != 1) {
+            Py_CLEAR(result);
+            PyErr_SetString(PyExc_RuntimeError, "SSL_export_keying_material() failed");
+            goto out;
+    }
+
+out:
+    PyBuffer_Release(&context);
+
+    return result;
+}
+#endif
 
 #if OPENSSL_VERSION_NUMBER >= 0x10101000L
 typedef struct {
@@ -206,8 +284,14 @@ static PyObject *sslkeylog_set_keylog_callback(PyObject *m, PyObject *args)
 static PyMethodDef sslkeylogmethods[] = {
     {"get_client_random", sslkeylog_get_client_random, METH_VARARGS,
      NULL},
+    {"get_server_random", sslkeylog_get_server_random, METH_VARARGS,
+     NULL},
     {"get_master_key", sslkeylog_get_master_key, METH_VARARGS,
      NULL},
+#if OPENSSL_VERSION_NUMBER >= 0x10001000L
+    {"export_keying_material", sslkeylog_export_keying_material, METH_VARARGS,
+     NULL},
+#endif
 #if OPENSSL_VERSION_NUMBER >= 0x10101000L
     {"set_keylog_callback", sslkeylog_set_keylog_callback, METH_VARARGS,
      NULL},
@@ -273,6 +357,7 @@ PyMODINIT_FUNC init_sslkeylog(void)
             sslkeylog_ex_data_free);
         if (sslkeylog_ex_data_index == -1) {
             Py_CLEAR(m);
+            PyErr_SetString(PyExc_RuntimeError, "SSL_CTX_get_ex_new_index() failed");
             goto out;
         }
     }

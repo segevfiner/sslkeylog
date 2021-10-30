@@ -56,6 +56,25 @@ def get_client_random(sock):
     return _sslkeylog.get_client_random(sock)
 
 
+def get_server_random(sock):
+    """
+    Get the server random from an :class:`ssl.SSLSocket` or :class:`ssl.SSLObject`.
+
+    .. note:: Does not work with TLS v1.3+ sockets.
+    """
+    if sock is None:
+        raise TypeError(
+            "get_server_random() argument must be ssl.SSLSocket or ssl.SSLObject, not None")
+
+    # Some Python versions implement SSLSocket using SSLObject so we need to dereference twice
+    sock = getattr(sock, '_sslobj', sock)
+    sock = getattr(sock, '_sslobj', sock)
+    if sock is None:
+        return None
+
+    return _sslkeylog.get_server_random(sock)
+
+
 def get_master_key(sock):
     """
     Get the master key from an :class:`ssl.SSLSocket` or :class:`ssl.SSLObject`.
@@ -73,6 +92,29 @@ def get_master_key(sock):
         return None
 
     return _sslkeylog.get_master_key(sock)
+
+
+def export_keying_material(sock, length, label, context=None):
+    """
+    Obtain keying material for application use from an :class:`ssl.SSLSocket` or
+    :class:`ssl.SSLObject`.
+
+    .. note:: Does not work with SSL v3.0 or below sockets.
+    """
+    if ssl.OPENSSL_VERSION_INFO[:3] < (1, 0, 1):
+        raise NotImplementedError("Method not implemented in OpenSSL older than 1.0.1")
+
+    if sock is None:
+        raise TypeError(
+            "export_keying_material() argument must be ssl.SSLSocket or ssl.SSLObject, not None")
+
+    # Some Python versions implement SSLSocket using SSLObject so we need to dereference twice
+    sock = getattr(sock, '_sslobj', sock)
+    sock = getattr(sock, '_sslobj', sock)
+    if sock is None:
+        return None
+
+    return _sslkeylog.export_keying_material(sock, length, label, context)
 
 
 def get_keylog_line(sock):
