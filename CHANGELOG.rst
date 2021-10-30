@@ -8,6 +8,8 @@ Added
 ^^^^^
 * CI using GitHub Actions. Sadly can't test on Windows Python 2.7 anymore since Microsoft just nuked
   the compilers for it from existence some time ago.
+* Added `get_server_random` and `export_keying_material`.
+* Add a guard to prevent using sslkeylog with a different version of OpenSSL at runtime then build time.
 
 v0.3.0 (2020-07-10)
 -------------------
