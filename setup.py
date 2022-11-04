@@ -89,7 +89,7 @@ setup(
             "pytest-metadata",
             "mock",
             "six",
-            "sphinx==4.*;python_version>='3.0'"
+            "sphinx==5.*;python_version>='3.0'"
         ],
     },
 )
