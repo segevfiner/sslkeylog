@@ -1,6 +1,17 @@
 Changelog
 =========
 
+Unreleased
+----------
+Added
+^^^^^
+* Windows support for Python builds with OpenSSL 3.0
+
+Removed
+^^^^^^^
+* CI for Python 2.7 & 3.6 as support was removed from GitHub Actions. Though the package itself
+  should still work with those versions.
+
 v0.4.0 (2020-10-31)
 -------------------
 
