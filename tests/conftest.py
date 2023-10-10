@@ -2,6 +2,6 @@ import pytest
 import ssl
 
 
-@pytest.mark.optionalhook
+@pytest.hookimpl(optionalhook=True)
 def pytest_metadata(metadata):
     metadata['OpenSSL'] = ssl.OPENSSL_VERSION
