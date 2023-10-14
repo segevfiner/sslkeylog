@@ -1,8 +1,8 @@
 Changelog
 =========
 
-Unreleased
-----------
+v0.5.0 (2023-10-14)
+-------------------
 Added
 ^^^^^
 * Windows support for Python builds with OpenSSL 3.0
