@@ -32,7 +32,7 @@ jobs:
       if: matrix.os == 'macos-latest'
       run: |
         brew install openssl@3.0
-        echo "CPPFLAGS=-I/usr/local/opt/openssl@3.0/include" >> $GITHUB_ENV
+        echo "CPPFLAGS=-I/opt/homebrew/opt/openssl@3.0/include" >> $GITHUB_ENV
         echo "LDFLAGS=-L/Library/Frameworks/Python.framework/Versions/3.12/lib" >> $GITHUB_ENV
     - name: Install dependencies
       run: |
