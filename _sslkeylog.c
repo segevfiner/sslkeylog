@@ -233,7 +233,7 @@ static void sslkeylog_ex_data_new(void *parent, void *ptr, CRYPTO_EX_DATA *ad,
 }
 
 static int sslkeylog_ex_data_dup(CRYPTO_EX_DATA *to, const CRYPTO_EX_DATA *from,
-                                 void *from_d, int idx, long argl, void *argp)
+                                 void **from_d, int idx, long argl, void *argp)
 {
     return 0;
 }
