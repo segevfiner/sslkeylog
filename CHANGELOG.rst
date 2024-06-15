@@ -1,6 +1,13 @@
 Changelog
 =========
 
+v0.5.1 (2024-06-15)
+-------------------
+Fixed
+^^^^^
+* Fix build issue due to wrong type of ``sslkeylog_ex_data_dup``
+  (`#16 <https://github.com/segevfiner/sslkeylog/pull/16>`_).
+
 v0.5.0 (2023-10-14)
 -------------------
 Added
