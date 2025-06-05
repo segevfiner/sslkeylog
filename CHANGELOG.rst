@@ -1,6 +1,12 @@
 Changelog
 =========
 
+v0.5.2 (2025-06-6)
+------------------
+Changed
+^^^^^^^
+* Just CI/CD updates and metadata updates.
+
 v0.5.1 (2024-06-15)
 -------------------
 Fixed
