@@ -1,8 +1,8 @@
 Changelog
 =========
 
-Unreleased
-----------
+v0.5.3 (2025-08-21)
+-------------------
 Changed
 ^^^^^^^
 * CI/CD and dependencies refresh.
