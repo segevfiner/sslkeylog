@@ -47,7 +47,7 @@ Links
 -----
 * `NSS Key Log Format`_
 * `Wireshark - SSL`_
-* `draft-ietf-tls-keylogfile-02: The SSLKEYLOGFILE Format for TLS <draft-ietf-tls-keylogfil-02_>`__
+* `draft-ietf-tls-keylogfile-02: The SSLKEYLOGFILE Format for TLS <draft-ietf-tls-keylogfile-02_>`__
 
 .. _draft-ietf-tls-keylogfile-02: https://www.ietf.org/archive/id/draft-ietf-tls-keylogfile-02.html
 .. _NSS Key Log Format: https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/Key_Log_Format
