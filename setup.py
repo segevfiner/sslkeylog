@@ -15,7 +15,7 @@ with open("README.rst", "r", encoding="utf-8") as f:
 
 if sys.platform == "win32":
     openssl_base_version = re.search(r"^OpenSSL ([0-9.]+)", ssl.OPENSSL_VERSION).group(1)
-    if openssl_base_version.startswith("3.0"):
+    if openssl_base_version.startswith("3."):
         openssl_version = "3.0.11"
     elif openssl_base_version == "1.1.1":
         openssl_version = "1.1.1c"
@@ -66,15 +66,12 @@ setup(
         "Programming Language :: Python :: 2",
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
-        "Programming Language :: Python :: 3.13"
+        "Programming Language :: Python :: 3.13",
+        "Programming Language :: Python :: 3.14"
     ],
     keywords="ssl tls sslkeylogfile",
     zip_safe=False,
@@ -93,7 +90,7 @@ setup(
             "pytest-metadata",
             "mock",
             "six",
-            "sphinx==5.*;python_version>='3.0'"
+            "sphinx==9.*;python_version>='3.12'"
         ],
     },
 )

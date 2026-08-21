@@ -25,7 +25,7 @@ from functools import wraps
 import _sslkeylog
 
 
-__version__ = u"0.5.2"
+__version__ = u"0.5.3"
 
 
 if sys.version_info[0] >= 3:

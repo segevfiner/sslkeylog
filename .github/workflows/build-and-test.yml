@@ -15,17 +15,17 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12', '3.13']
+        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
         include:
         - os: windows-latest
-          python-version: '3.13'
+          python-version: '3.14'
         - os: macos-latest
-          python-version: '3.13'
+          python-version: '3.14'
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v7
       with:
         python-version: ${{ matrix.python-version }}
     - name: Set CPPFLAGS/LDFLAGS for OpenSSL on macOS
@@ -33,7 +33,7 @@ jobs:
       run: |
         brew install openssl@3.0
         echo "CPPFLAGS=-I/opt/homebrew/opt/openssl@3.0/include" >> $GITHUB_ENV
-        echo "LDFLAGS=-L/Library/Frameworks/Python.framework/Versions/3.13/lib" >> $GITHUB_ENV
+        echo "LDFLAGS=-L/Library/Frameworks/Python.framework/Versions/3.14/lib" >> $GITHUB_ENV
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip setuptools wheel
@@ -41,7 +41,6 @@ jobs:
       run: |
         pip install -e .[dev]
     - name: Lint with flake8
-      if: ${{ matrix.python-version != '3.7' }}
       run: |
         # stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics

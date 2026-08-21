@@ -327,8 +327,12 @@ PyMODINIT_FUNC init_sslkeylog(void)
 {
     PyObject *m = NULL;
     PyObject *_ssl;
+    unsigned long runtime_version = OpenSSL_version_num();
 
-    if ((OpenSSL_version_num() & 0xFFFFF000) != (OPENSSL_VERSION_NUMBER & 0xFFFFF000)) {
+    /* OpenSSL >=3 only breaks ABI on major version bumps, older ones on major.minor.patch */
+    if ((runtime_version & 0xFFFFF000) >= 0x03000000
+        ? (runtime_version & 0xFF000000) != (OPENSSL_VERSION_NUMBER & 0xFF000000)
+        : (runtime_version & 0xFFFFF000) != (OPENSSL_VERSION_NUMBER & 0xFFFFF000)) {
         PyErr_SetString(PyExc_RuntimeError,
             "OpenSSL version mismatch between build and runtime. "
             "Please clear your pip cache and rebuild sslkeylog");
