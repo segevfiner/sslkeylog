@@ -1,6 +1,13 @@
 Changelog
 =========
 
+Unreleased
+----------
+Changed
+^^^^^^^
+* CI/CD and dependencies refresh.
+* More accurate condition for OpenSSL 3.1+ support.
+
 v0.5.2 (2025-06-6)
 ------------------
 Changed
